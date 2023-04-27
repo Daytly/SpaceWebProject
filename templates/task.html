@@ -3,14 +3,16 @@
 {% block content %}
 <div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white;">
     <h1>Тесты</h1>
+    {% if current_user.type == 2 %}
     <a href="/tasks/create" class="btn btn-warning">
         Создать
     </a>
+    {% endif %}
     {% for item in tasks%}
     <div class="col-md6 border rounded" style="padding:1% 2%; margin:1% 2%; background: white;">
         <div class="row align-items-center">
             <div class="col-8">
-                <h2 style="cursor: pointer; margin-top:0px" onclick="location.href='/lesson/{{item.id}}';">
+                <h2 style="cursor: pointer; margin-top:0px" onclick="location.href='/tasks/{{item.id}}/open';">
                     {{item.title}}
                 </h2>
                 Автор - {{item.user.name}} {{item.user.surname}}
@@ -30,7 +32,7 @@
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
-{% endfor %}
 
 {% endblock %}

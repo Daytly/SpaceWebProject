@@ -359,25 +359,32 @@ def delete_user():
 @app.route('/tasks')
 def tasks():
     db_sess = db_session.create_session()
-    task = db_sess.query(Task).filter(Task.user == current_user).all()
-    print()
-    return render_template('task.html', tasks=task, url='/tasks')
+    if current_user.type == 2:
+        _tasks = db_sess.query(Task).filter(Task.user == current_user).all()
+    else:
+        _tasks = []
+        for task_id in [int(i) for i in current_user.tests.split(',')]:
+            task = db_sess.query(Task).get(task_id)
+            _tasks.append(task)
+    return render_template('task.html', tasks=_tasks, url='/tasks')
 
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
 def add_task():
-    form = TaskForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        task = Task()
-        task.title = form.title.data
-        task.url = form.url.data
-        user = db_sess.query(User).get(current_user.id)
-        user.tasks.append(task)
-        db_sess.merge(user)
-        db_sess.commit()
-        return redirect('/tasks')
-    return render_template('create_task.html', url='/tasks/create', form=form)
+    if current_user.type == 2:
+        form = TaskForm()
+        if form.validate_on_submit():
+            db_sess = db_session.create_session()
+            task = Task()
+            task.title = form.title.data
+            task.url = form.url.data
+            user = db_sess.query(User).get(current_user.id)
+            user.tasks.append(task)
+            db_sess.merge(user)
+            db_sess.commit()
+            return redirect('/tasks')
+        return render_template('create_task.html', url='/tasks/create', form=form)
+    return 'Доступ закрыт'
 
 
 @app.route('/tasks/<int:task_id>/edit', methods=['GET', 'POST'])
@@ -429,10 +436,23 @@ def add_task_study(task_id, user_id):
     if current_user.type == 2:
         db_sess = db_session.create_session()
         user = db_sess.query(User).get(user_id)
-        user.tests += f',{task_id}'
+        if user.tests:
+            user.tests += f',{task_id}'
+        else:
+            user.tests = f'{task_id}'
         db_sess.merge(user)
         db_sess.commit()
         return redirect(f'/tasks/{task_id}/appoint')
+    else:
+        return 'Доступ закрыт'
+
+
+@app.route('/tasks/<int:task_id>/open', methods=['GET', 'POST'])
+def open_task(task_id):
+    if str(task_id) in current_user.tests.split(','):
+        db_sess = db_session.create_session()
+        task = db_sess.query(Task).get(task_id)
+        return render_template('task_page.html', task=task)
     else:
         return 'Доступ закрыт'
 
