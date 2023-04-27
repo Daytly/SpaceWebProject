@@ -33,6 +33,11 @@
     <a class="btn btn-danger" href="/logout">Выйти</a>
     <a class="btn btn-danger" href="/settings/delete">Удалить аккаунт</a>
     <a class="btn btn-success" href="/settings/edit">Изменить</a>
-    <a class="btn btn-success" href="/search/&{{user.email}}">Посмотреть мои объявления</a>
+    {% if user.type == 2 %}
+    <a class="btn btn-success" href="/search/&{{user.email}}">Посмотреть мои уроки</a>
+    <a class="btn btn-success" href="/tasks">Назначить задания</a>
+    {% else %}
+    <a class="btn btn-success" href="/tasks">Посмотреть мои задания</a>
+    {% endif %}
 </div>
 {% endblock %}
