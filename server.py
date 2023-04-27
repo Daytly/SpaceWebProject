@@ -102,6 +102,7 @@ def register():
         user.surname = form.surname.data
         user.age = form.age.data
         user.type = form.type.data
+        user.tests = ''
         file = form.photo.data
         user.set_password(form.password.data)
         db_sess.add(user)
@@ -359,6 +360,7 @@ def delete_user():
 def tasks():
     db_sess = db_session.create_session()
     task = db_sess.query(Task).filter(Task.user == current_user).all()
+    print()
     return render_template('task.html', tasks=task, url='/tasks')
 
 
@@ -379,68 +381,60 @@ def add_task():
 
 
 @app.route('/tasks/<int:task_id>/edit', methods=['GET', 'POST'])
-def edit_task():
-    form = RegisterForm()
+def edit_task(task_id):
+    form = TaskForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
-        user = db_sess.query(User).get(current_user.id)
-        if user:
-            form.email.data = user.email
-            form.name.data = user.name
-            form.surname.data = user.surname
-            form.age.data = user.age
+        task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
+        if task:
+            form.title.data = task.title
+            form.url.data = task.url
         else:
             abort(404)
     if request.method == "POST":
         db_sess = db_session.create_session()
-        user = db_sess.query(User).get(current_user.id)
-        user1 = db_sess.query(User).filter(User.email == form.email.data).first()
-        if user1:
-            if user1.id != current_user.id:
-                return render_template('edit_user.html', title='Редактирование профиля', form=form,
-                                       message="Такой пользователь уже есть")
-        """try:
-            check_password(form.password.data, form.password_again.data)
-        except Exception as error:
-            return render_template('register.html', title='Редактирование профиля', form=form,
-                                   message=error.__str__())"""
-        if user:
-            user.email = form.email.data
-            user.set_password(form.password.data)
-            user.name = form.name.data
-            user.surname = form.surname.data
-            user.age = form.age.data
-            file = form.photo.data
-            if file:
-                filename = werkzeug.utils.secure_filename(file.filename)
-                path = f'static/users_data/{user.email}/avatar/{filename}'
-                if user.avatar:
-                    del_path = user.avatar
-                    os.remove(del_path)
-                file.save(path)
-                user.avatar = f'static/users_data/{user.email}/avatar/{filename}'
-                image = Image.open(path)
-                im_crop = crop_center(image)
-                im_crop.save(path, quality=95)
-            elif not user.avatar:
-                user.avatar = 'https://bootdey.com/img/Content/user_1.jpg'
+        task = db_sess.query(Task).get(task_id)
+        if task:
+            task.title = form.title.data
+            task.url = form.url.data
             db_sess.commit()
-            return redirect('/settings')
+            return redirect('/tasks')
         else:
             abort(404)
-    return render_template('edit_user.html',
-                           title='Редактирование профиля',
+    return render_template('create_task.html',
+                           title='Редактирование теста',
                            form=form,
                            url='')
 
 
 @app.route('/tasks/<int:task_id>/delete', methods=['GET', 'POST'])
-def delete_task():
+def delete_task(task_id):
     db_sess = db_session.create_session()
-    user = db_sess.query(User).get(current_user.id)
-    db_sess.delete(user)
+    task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
+    db_sess.delete(task)
     db_sess.commit()
-    return redirect('/')
+    return redirect('/tasks')
+
+
+@app.route('/tasks/<int:task_id>/appoint', methods=['GET', 'POST'])
+def appoint_task(task_id):
+    db_sess = db_session.create_session()
+    task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
+    users = db_sess.query(User).filter(User.type == 1).all()
+    return render_template('appoint_page.html', task=task, users=users, title='Учинеки', str=str)
+
+
+@app.route('/tasks/<int:task_id>/appoint/<int:user_id>', methods=['GET', 'POST'])
+def add_task_study(task_id, user_id):
+    if current_user.type == 2:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).get(user_id)
+        user.tests += f',{task_id}'
+        db_sess.merge(user)
+        db_sess.commit()
+        return redirect(f'/tasks/{task_id}/appoint')
+    else:
+        return 'Доступ закрыт'
 
 
 @app.route("/authors")

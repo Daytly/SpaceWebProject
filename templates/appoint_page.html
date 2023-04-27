@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white;">
+    <h1>{{title}}</h1>
+    {% for user in users %}
+    <div>
+        {{user.name}} {{user.surname}} {{user.email}}
+        {% if str(task.id) not in user.tests.split(",") %}
+        <a href="/tasks/{{task.id}}/appoint/{{user.id}}">
+            Назначить
+        </a>
+        {% else %}
+        Уже назначен
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
