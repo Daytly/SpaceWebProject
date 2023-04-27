@@ -15,7 +15,7 @@ class RegisterForm(FlaskForm):
     photo = FileField('Аватар', validators=[FileAllowed(['jpg', 'png'], 'Только картинки')])
     type = SelectField('Должность', validators=[DataRequired()], coerce=int, choices=[(1, 'Ученик'),
                                                                                       (2, 'Учитель')])
-    submit = SubmitField('Зарегестрироваться')
+    submit = SubmitField('Продолжить')
 
 
 class LoginForm(FlaskForm):

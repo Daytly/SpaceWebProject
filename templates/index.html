@@ -6,6 +6,7 @@
     {% for item in lessons%}
     {% if ((search['title'] in item.title.lower() or not search['title']) and
     (search['author'] == item.user.email or not search['author']))%}
+    {% if not item.is_private or item.user.id == current_user.id%}
     <div class="col-md6 border rounded" style="padding:1% 2%; margin:1% 2%; background: white;">
         <div class="row align-items-center">
             <div class="col-8">
@@ -38,6 +39,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endif %}
 {% endfor %}
 

@@ -46,8 +46,10 @@ def index():
     lessons = []
     if current_user.is_authenticated:
         lessons = db_sess.query(Lesson).all()
-    return render_template("index.html", lessons=lessons, search={'title': '',
-                                                                  'author': ''},
+    return render_template("index.html",
+                           lessons=lessons,
+                           search={'title': '',
+                                   'author': ''},
                            form=form,
                            url='/')
 
@@ -98,6 +100,11 @@ def register():
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация', form=form,
                                    message="Такой пользователь уже есть")
+        """try:
+            check_password(form.password.data, form.password_again.data)
+        except Exception as error:
+            return render_template('register.html', title='Редактирование профиля', form=form,
+                                   message=error.__str__())"""
         user = User()
         user.name = form.name.data
         user.email = form.email.data
@@ -125,7 +132,7 @@ def register():
             image = Image.open(path)
             im_crop = crop_center(image)
             im_crop.save(path, quality=95)
-        return redirect('/')
+        return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -314,26 +321,26 @@ def edit_user():
             if user1.id != current_user.id:
                 return render_template('edit_user.html', title='Редактирование профиля', form=form,
                                        message="Такой пользователь уже есть")
-        """try:
-            check_password(form.password.data, form.password_again.data)
-        except Exception as error:
-            return render_template('register.html', title='Редактирование профиля', form=form,
-                                   message=error.__str__())"""
         if user:
+            if not user.check_password(form.password.data):
+                return render_template('edit_user.html', title='Редактирование профиля', form=form,
+                                       message="Неверный пароль")
             user.email = form.email.data
-            user.set_password(form.password.data)
             user.name = form.name.data
             user.surname = form.surname.data
             user.age = form.age.data
             file = form.photo.data
             if file:
                 filename = werkzeug.utils.secure_filename(file.filename)
-                path = f'static/users_data/{user.email}/avatar/{filename}'
+                path = f'static/users_data/{user.id}/avatar/{filename}'
                 if user.avatar:
-                    del_path = user.avatar
-                    os.remove(del_path)
+                    try:
+                        del_path = user.avatar
+                        os.remove(del_path)
+                    except OSError:
+                        pass
                 file.save(path)
-                user.avatar = f'static/users_data/{user.email}/avatar/{filename}'
+                user.avatar = f'static/users_data/{user.id}/avatar/{filename}'
                 image = Image.open(path)
                 im_crop = crop_center(image)
                 im_crop.save(path, quality=95)
