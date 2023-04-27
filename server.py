@@ -169,12 +169,16 @@ def add_lesson():
 
 
 @app.route('/lesson/<int:lesson_id>', methods=['GET', 'POST'])
-def advertisement_page(lesson_id):
+def lesson_page(lesson_id):
     db_sess = db_session.create_session()
-    advertisement = db_sess.query(Lesson).get(lesson_id)
-    if advertisement:
-        return render_template('lesson_page.html', advertisement=advertisement,
-                               url_for=url_for)
+    lesson = db_sess.query(Lesson).get(lesson_id)
+    url_videos = [url.replace(' ', '').replace('https://youtu.be/', '') for url in lesson.url_videos.split(',')]
+    for ind in range(len(url_videos)):
+        if url_videos[ind] == '':
+            url_videos.pop(ind)
+    if lesson:
+        return render_template('lesson_page.html', lesson=lesson,
+                               url_for=url_for, url_videos=url_videos)
     else:
         return redirect('/')
 

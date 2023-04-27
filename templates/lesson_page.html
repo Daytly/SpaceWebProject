@@ -3,22 +3,30 @@
 <link href="/static/styles/windows_style.css">
 <div class="col-md12 border rounded" style="padding:1% 2%; margin:1% 2%; background: white;">
     <div style="font-size:x-large;">
-        <h1>{{advertisement.title}}</h1>
+        <h1>{{lesson.title}}</h1>
         <b>
             <p style="font-size: 32px">
                 Конспект урока:
             </p>
         </b>
-        {% for line in advertisement.content.split("\n")%}
+        {% for line in lesson.content.split("\n")%}
         {{line}}
         <br>
         {% endfor %}
-        <iframe width="392" height="220" src="https://www.youtube.com/embed/kbLdob3dhzo" title="YouTube video player"
+        {% for video in url_videos%}
+        {% if loop.first %}
+        <b>
+            <p style="font-size: 32px">
+                Видеоматериалы к уроку:
+            </p></b>
+        {% endif %}
+        <iframe width="392" height="220" src="https://www.youtube.com/embed/{{video}}" title="YouTube video player"
                 frameborder="0"
                 allow="accelerometer; autoplay;
                 clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen>
         </iframe>
+        {% endfor %}
     </div>
     <div style="font-size:x-large;">
         <b>
@@ -27,16 +35,16 @@
             </p>
         </b>
         <img height="50px" width="50px" alt="avatar"
-             class="rounded-circle" src="{{url_for('static', filename=advertisement.user.avatar[7:])}}">
-        {{advertisement.user.name}}
-        {{advertisement.user.surname}}
+             class="rounded-circle" src="{{url_for('static', filename=lesson.user.avatar[7:])}}">
+        {{lesson.user.name}}
+        {{lesson.user.surname}}
         <br>
-        {{advertisement.user.email}}
+        {{lesson.user.email}}
     </div>
     {% if current_user.is_authenticated %}
-    {% if current_user.id != advertisement.user.id %}
+    {% if current_user.id != lesson.user.id %}
     <div class="col-2 center">
-        <a href="/chat/{{ advertisement.user.id }}" class="btn btn-success">
+        <a href="/chat/{{ lesson.user.id }}" class="btn btn-success">
             Чат с пользователем
         </a>
     </div>
