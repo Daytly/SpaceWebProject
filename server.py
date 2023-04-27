@@ -5,6 +5,7 @@ from flask import Flask, render_template, redirect, make_response, request, abor
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api
 from data.lesson import Lesson
+from data.scores import Scores
 from forms.LessonForm import LessonForm
 from forms.TaskForm import TaskForm
 from forms.ValueForm import ValueForm
@@ -460,8 +461,22 @@ def estimate_task_value(task_id, user_id):
             return render_template('value.html', form=form)
         elif request.method == 'POST':
             db_sess = db_session.create_session()
+            score = db_sess.query(Scores).filter(Scores.task_id == task_id and Scores.user_id == user_id).first()
             user = db_sess.query(User).get(user_id)
-            user.count += form.value.data
+            if db_sess.query(Scores).filter(Scores.task_id == task_id and Scores.user_id == user_id).all():
+                user.count -= score.count
+                user.count += form.value.data
+                score.count = form.value.data
+                db_sess.merge(score)
+            else:
+                user.count += form.value.data
+                value = Scores()
+                value.user = user
+                value.task = db_sess.query(Task).get(task_id)
+                value.count = form.value.data
+                db_sess.add(value)
+                db_sess.commit()
+            db_sess = db_session.create_session()
             db_sess.merge(user)
             db_sess.commit()
             return redirect(f'/tasks/{task_id}/estimate')

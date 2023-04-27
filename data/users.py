@@ -24,6 +24,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     count = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     lesson = orm.relationship("Lesson", back_populates='user')
     tasks = orm.relationship("Task", back_populates='user')
+    scores = orm.relationship("Scores", back_populates='user')
 
     def __repr__(self):
         return f'<User> {self.id} {self.name} {self.email}'
