@@ -35,13 +35,13 @@
     </div>
     <br>
     <a class="btn btn-danger" href="/logout">Выйти</a>
-    <a class="btn btn-danger" href="/settings/delete">Удалить аккаунт</a>
+    <a class="btn btn-warning" href="/settings/delete">Удалить аккаунт</a>
     <a class="btn btn-success" href="/settings/edit">Изменить</a>
     {% if user.type == 2 %}
-    <a class="btn btn-success" href="/search/&{{user.email}}">Посмотреть мои уроки</a>
-    <a class="btn btn-success" href="/tasks">Назначить задания</a>
+    <a class="btn btn-secondary" href="/search/&{{user.email}}">Посмотреть мои уроки</a>
+    <a class="btn btn-info" href="/tasks">Назначить задания</a>
     {% else %}
-    <a class="btn btn-success" href="/tasks">Посмотреть мои задания</a>
+    <a class="btn btn-secondary" href="/tasks">Посмотреть мои задания</a>
     {% endif %}
 </div>
 {% endblock %}
