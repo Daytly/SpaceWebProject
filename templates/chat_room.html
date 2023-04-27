@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/styles/chat_style.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <div class="container bootstrap snippets bootdey">
+        <div class="row">
+            <div class="col-md-4 bg-white ">
+                <div class=" row border-bottom padding-sm" style="height: 40px;">
+                    Предыдущие чаты
+                </div>
+
+                <!-- Короч это активные чаты -->
+                <ul class="friend-list">
+                    {% for user in previous %}
+                    <li class="">
+                        <a href="/chat/{{user.id}}" class="clearfix">
+                            <img src="{{ url_for('static', filename=user.avatar[7:])}}" alt="avatar" class="img-circle">
+                            <div class="friend-name">
+                                <strong>{{ user.name }}</strong>
+                            </div>
+                            <div class="last-message text-muted">{{ lm[user.id] }}</div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- ТУт конец активных чатов -->
+            {% if id != 0 %}
+            <div class="col-md-8 bg-white">
+                <div class="chat-message" style="overflow-y:scroll; height: 55em;" id="chelik">
+                    <ul class="chat">
+                        <!-- Начало сообщения -->
+                        {% for message in messages %}
+                        {% if message['id'] == other.id %}
+                        <li class="left clearfix">
+<span class="chat-img pull-left">
+<img src="{{ url_for('static', filename=other.avatar[7:])}}" alt="avatar">
+</span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font">{{other.name}}</strong>
+                                </div>
+                                <p>
+                                    {{message['text']}}
+                                </p>
+                            </div>
+                        </li>
+                        <!-- Конец сообщения -->
+                        {% else %}
+                        <li class="right clearfix">
+<span class="chat-img pull-right">
+<img src="{{ url_for('static', filename=cur.avatar[7:])}}" alt="User Avatar">
+</span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font">{{cur.name}}</strong>
+                                </div>
+                                <p>
+                                    {{message['text']}}
+                                </p>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="chat-box bg-white">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            {{ form.message(class="form-control border no-shadow no-rounded", style="width:80%;") }}
+                            {{ form.submit(type="submit", class="btn btn-primary", style="width:20%;") }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+  var block = document.getElementById("chelik");
+  block.scrollTop = block.scrollHeight;
+
+    </script>
+</form>
+{% endblock %}

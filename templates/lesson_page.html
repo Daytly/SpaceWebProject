@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="/static/styles/windows_style.css">
+<div class="col-md12 border rounded" style="padding:1% 2%; margin:1% 2%; background: white;">
+    <div style="font-size:x-large;">
+        <h1>{{advertisement.title}}</h1>
+        <b>
+            <p style="font-size: 32px">
+                Конспект урока:
+            </p>
+        </b>
+        {% for line in advertisement.content.split("\n")%}
+        {{line}}
+        <br>
+        {% endfor %}
+        <iframe width="392" height="220" src="https://www.youtube.com/embed/kbLdob3dhzo" title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay;
+                clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+        </iframe>
+    </div>
+    <div style="font-size:x-large;">
+        <b>
+            <p style="font-size: 32px">
+                Учитель:
+            </p>
+        </b>
+        <img height="50px" width="50px" alt="avatar"
+             class="rounded-circle" src="{{url_for('static', filename=advertisement.user.avatar[7:])}}">
+        {{advertisement.user.name}}
+        {{advertisement.user.surname}}
+        <br>
+        {{advertisement.user.email}}
+    </div>
+    {% if current_user.is_authenticated %}
+    {% if current_user.id != advertisement.user.id %}
+    <div class="col-2 center">
+        <a href="/chat/{{ advertisement.user.id }}" class="btn btn-success">
+            Чат с пользователем
+        </a>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

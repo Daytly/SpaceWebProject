@@ -19,6 +19,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     modified_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, default=datetime.datetime.now)
     type = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
+    avatar = sqlalchemy.Column(sqlalchemy.String)
     lesson = orm.relationship("Lesson", back_populates='user')
 
     def __repr__(self):
