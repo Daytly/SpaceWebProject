@@ -15,6 +15,7 @@ from forms.ChatForm import ChatForm
 from functions import check_password, crop_center
 from tinydb import TinyDB
 from PIL import Image
+from data.task import Task
 
 chats = TinyDB('chats_db.json')
 app = Flask(__name__)
@@ -346,6 +347,78 @@ def edit_user():
 
 @app.route('/settings/delete', methods=['GET', 'POST'])
 def delete_user():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).get(current_user.id)
+    db_sess.delete(user)
+    db_sess.commit()
+    return redirect('/')
+
+
+@app.route('/tasks')
+def tasks():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).get(current_user.id)
+    return render_template('task.html', user=user, url='/settings')
+
+
+@app.route('/tasks/<int:task_id>/edit', methods=['GET', 'POST'])
+def edit_task():
+    form = RegisterForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).get(current_user.id)
+        if user:
+            form.email.data = user.email
+            form.name.data = user.name
+            form.surname.data = user.surname
+            form.age.data = user.age
+        else:
+            abort(404)
+    if request.method == "POST":
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).get(current_user.id)
+        user1 = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user1:
+            if user1.id != current_user.id:
+                return render_template('edit_user.html', title='Редактирование профиля', form=form,
+                                       message="Такой пользователь уже есть")
+        """try:
+            check_password(form.password.data, form.password_again.data)
+        except Exception as error:
+            return render_template('register.html', title='Редактирование профиля', form=form,
+                                   message=error.__str__())"""
+        if user:
+            user.email = form.email.data
+            user.set_password(form.password.data)
+            user.name = form.name.data
+            user.surname = form.surname.data
+            user.age = form.age.data
+            file = form.photo.data
+            if file:
+                filename = werkzeug.utils.secure_filename(file.filename)
+                path = f'static/users_data/{user.email}/avatar/{filename}'
+                if user.avatar:
+                    del_path = user.avatar
+                    os.remove(del_path)
+                file.save(path)
+                user.avatar = f'static/users_data/{user.email}/avatar/{filename}'
+                image = Image.open(path)
+                im_crop = crop_center(image)
+                im_crop.save(path, quality=95)
+            elif not user.avatar:
+                user.avatar = 'https://bootdey.com/img/Content/user_1.jpg'
+            db_sess.commit()
+            return redirect('/settings')
+        else:
+            abort(404)
+    return render_template('edit_user.html',
+                           title='Редактирование профиля',
+                           form=form,
+                           url='')
+
+
+@app.route('/tasks/<int:task_id>/delete', methods=['GET', 'POST'])
+def delete_task():
     db_sess = db_session.create_session()
     user = db_sess.query(User).get(current_user.id)
     db_sess.delete(user)

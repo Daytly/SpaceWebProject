@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white;">
+    <h1>Тесты</h1>
+    {% for item in tasks%}
+    <div class="col-md6 border rounded" style="padding:1% 2%; margin:1% 2%; background: white;">
+        <div class="row align-items-center">
+            <div class="col-8">
+                <h2 style="cursor: pointer; margin-top:0px" onclick="location.href='/lesson/{{item.id}}';">
+                    {{item.title}}
+                </h2>
+                Автор - {{item.user.name}}}}
+                {% if current_user.is_authenticated and current_user == item.user %}
+                <div>
+                    <a href="/tasks/{{ item.id }}/edit" class="btn btn-warning">
+                        Изменить
+                    </a>
+                    <a href="/tasks/{{ item.id }}/delete" class="btn btn-danger">
+                        Удалить
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
