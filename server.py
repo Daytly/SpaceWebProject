@@ -54,10 +54,10 @@ def search(searchWord):
     form = SearchForm()
     db_sess = db_session.create_session()
     if current_user.is_authenticated:
-        advertisement = db_sess.query(Lesson).filter(
+        lessons = db_sess.query(Lesson).filter(
             (Lesson.user == current_user) | (Lesson.is_private != True))
     else:
-        advertisement = db_sess.query(Lesson).filter(Lesson.is_private != True)
+        lessons = db_sess.query(Lesson).filter(Lesson.is_private != True)
     text = ''
     if request.method == 'GET':
         text = searchWord
@@ -80,7 +80,7 @@ def search(searchWord):
                            form=form,
                            url_for=url_for,
                            search=search,
-                           advertisement=advertisement,
+                           lessons=lessons,
                            url=f'/search/{searchWord}')
 
 
@@ -121,7 +121,7 @@ def register():
             image = Image.open(path)
             im_crop = crop_center(image)
             im_crop.save(path, quality=95)
-        return redirect('/login')
+        return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
 
