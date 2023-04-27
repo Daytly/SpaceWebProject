@@ -100,11 +100,11 @@ def register():
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация', form=form,
                                    message="Такой пользователь уже есть")
-        """try:
+        try:
             check_password(form.password.data, form.password_again.data)
         except Exception as error:
             return render_template('register.html', title='Редактирование профиля', form=form,
-                                   message=error.__str__())"""
+                                   message=error.__str__())
         user = User()
         user.name = form.name.data
         user.email = form.email.data
