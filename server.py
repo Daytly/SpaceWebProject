@@ -43,18 +43,20 @@ def index():
     if current_user.is_authenticated:
         lessons = db_sess.query(Lesson).all()
     return render_template("index.html", lessons=lessons, search={'title': '',
-                                                                  'author': ''})
+                                                                  'author': ''},
+                           form=form,
+                           url='/')
 
 
-"""@app.route("/search/<string:searchWord>", methods=['GET', 'POST'])
+@app.route("/search/<string:searchWord>", methods=['GET', 'POST'])
 def search(searchWord):
     form = SearchForm()
     db_sess = db_session.create_session()
     if current_user.is_authenticated:
-        advertisement = db_sess.query(Advertisement).filter(
-            (Advertisement.user == current_user) | (Advertisement.is_private != True))
+        advertisement = db_sess.query(Lesson).filter(
+            (Lesson.user == current_user) | (Lesson.is_private != True))
     else:
-        advertisement = db_sess.query(Advertisement).filter(Advertisement.is_private != True)
+        advertisement = db_sess.query(Lesson).filter(Lesson.is_private != True)
     text = ''
     if request.method == 'GET':
         text = searchWord
@@ -78,7 +80,7 @@ def search(searchWord):
                            url_for=url_for,
                            search=search,
                            advertisement=advertisement,
-                           url=f'/search/{searchWord}')"""
+                           url=f'/search/{searchWord}')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -282,7 +284,7 @@ def logout():
 @app.route('/settings')
 def settings():
     db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    user = db_sess.query(User).get(current_user.id)
     return render_template('settings.html', user=user, url='/settings')
 
 
@@ -291,7 +293,7 @@ def edit_user():
     form = RegisterForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.id == current_user.id, ).first()
+        user = db_sess.query(User).get(current_user.id)
         if user:
             form.email.data = user.email
             form.name.data = user.name
@@ -299,13 +301,13 @@ def edit_user():
             form.age.data = user.age
         else:
             abort(404)
-    if form.validate_on_submit():
+    if request.method == "POST":
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        user = db_sess.query(User).get(current_user.id)
         user1 = db_sess.query(User).filter(User.email == form.email.data).first()
         if user1:
             if user1.id != current_user.id:
-                return render_template('register.html', title='Редактирование профиля', form=form,
+                return render_template('edit_user.html', title='Редактирование профиля', form=form,
                                        message="Такой пользователь уже есть")
         """try:
             check_password(form.password.data, form.password_again.data)
@@ -336,7 +338,7 @@ def edit_user():
             return redirect('/settings')
         else:
             abort(404)
-    return render_template('register.html',
+    return render_template('edit_user.html',
                            title='Редактирование профиля',
                            form=form,
                            url='')

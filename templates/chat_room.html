@@ -33,7 +33,7 @@
 
                 <!-- ТУт конец активных чатов -->
                 {% if id != 0 %}
-                <div class="col-md-8 bg-white">
+                <div class="col-md-7 bg-white">
                     <div class="chat-message" style="overflow-y:scroll; height: 55em;" id="chelik">
                         <ul class="chat">
                             <!-- Начало сообщения -->
@@ -41,7 +41,11 @@
                             {% if message['id'] == other.id %}
                             <li class="left clearfix">
 <span class="chat-img pull-left">
-<img src="{{ url_for('static', filename=other.avatar[7:])}}" alt="avatar">
+    {% if 'http' in other.avatar%}
+<img src="{{other.avatar}}" alt="User Avatar">
+    {% else %}
+<img src="{{ url_for('static', filename=other.avatar[7:])}}" alt="User Avatar">
+    {% endif %}
 </span>
                                 <div class="chat-body clearfix">
                                     <div class="header">
@@ -56,7 +60,11 @@
                             {% else %}
                             <li class="right clearfix">
 <span class="chat-img pull-right">
+    {% if 'http' in cur.avatar%}
+<img src="{{cur.avatar}}" alt="User Avatar">
+    {% else %}
 <img src="{{ url_for('static', filename=cur.avatar[7:])}}" alt="User Avatar">
+    {% endif %}
 </span>
                                 <div class="chat-body clearfix">
                                     <div class="header">
@@ -88,6 +96,7 @@
         <script type="text/javascript">
   var block = document.getElementById("chelik");
   block.scrollTop = block.scrollHeight;
+
 
 
         </script>
