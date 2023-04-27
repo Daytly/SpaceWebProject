@@ -8,5 +8,5 @@ class LessonForm(FlaskForm):
     title = StringField("Название урока", validators=[DataRequired()])
     content = TextAreaField("Материал", validators=[DataRequired()])
     is_private = BooleanField("Скрыть урок")
-    url_videos = URLField('Ссылка на видео материал')
+    url_videos = URLField('Ссылки на видео материалы (через запятую)')
     submit = SubmitField('Применить')
