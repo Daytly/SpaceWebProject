@@ -484,6 +484,7 @@ def estimate_task_value(task_id, user_id):
                 db_sess.merge(score)
                 db_sess.commit()
             else:
+                db_sess.commit()
                 user.count += form.value.data
                 value = Scores()
                 value.user = user
