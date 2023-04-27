@@ -15,15 +15,11 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     surname = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     age = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
-    position = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    speciality = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    address = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     modified_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, default=datetime.datetime.now)
-    city_from = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    jobs = orm.relationship("Jobs", back_populates='user')
-    departament = orm.relationship("Departament", back_populates='user')
+    type = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
+    lesson = orm.relationship("Lesson", back_populates='user')
 
     def __repr__(self):
         return f'<User> {self.id} {self.name} {self.email}'

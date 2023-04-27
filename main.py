@@ -1,7 +1,9 @@
 from flask import Flask, render_template, redirect, session, make_response, request, abort, jsonify, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from forms.user import RegisterForm, LoginForm, EmergencyAccessForm
+from forms.user import RegisterForm, LoginForm
+from forms.LessonForm import LessonForm
 from data.users import User
+from data.lesson import Lesson
 from data import db_session
 
 app = Flask(__name__)
@@ -11,7 +13,7 @@ login_manager.init_app(app)
 
 
 def main():
-    db_session.global_init("db/MarsOne.db")
+    db_session.global_init("db/Space.db")
     # app.register_blueprint(jobs_api.blueprint)
     # app.register_blueprint(user_api.blueprint)
     app.run()
@@ -19,7 +21,11 @@ def main():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    db_sess = db_session.create_session()
+    lessons = []
+    if current_user.is_authenticated:
+        lessons = db_sess.query(Lesson).all()
+    return render_template("index.html", lessons=lessons)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -38,10 +44,7 @@ def register():
             email=form.email.data,
             surname=form.surname.data,
             age=form.age.data,
-            position=form.position.data,
-            address=form.address.data,
-            speciality=form.speciality.data,
-            city_from=form.city_from.data)
+            type=form.type.data)
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
@@ -75,6 +78,22 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
+
+
+@app.route('/lesson', methods=['POST', 'GET'])
+@login_required
+def create_lesson():
+    form = LessonForm()
+    if request.method == 'POST':
+        db_sess = db_session.create_session()
+        lesson = Lesson(title=form.title.data,
+                        content=form.content.data,
+                        user=current_user
+        )
+        db_sess.add(lesson)
+        db_sess.commit()
+    elif request.method == 'GET':
+        render_template('index.html')
 
 
 @app.errorhandler(404)

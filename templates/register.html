@@ -40,7 +40,7 @@
             </p>
         {% endfor %}
     </p>
-        <p>
+    <p>
         {{ form.surname.label }}<br>
         {{ form.surname(class="form-control") }}<br>
         {% for error in form.surname.errors %}
@@ -49,7 +49,7 @@
             </p>
         {% endfor %}
     </p>
-        <p>
+    <p>
         {{ form.age.label }}<br>
         {{ form.age(class="form-control") }}<br>
         {% for error in form.age.errors %}
@@ -59,37 +59,9 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.position.label }}<br>
-        {{ form.position(class="form-control") }}<br>
-        {% for error in form.position.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-        <p>
-        {{ form.speciality.label }}<br>
-        {{ form.speciality(class="form-control") }}<br>
-        {% for error in form.speciality.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-        <p>
-        {{ form.address.label }}<br>
-        {{ form.address(class="form-control") }}<br>
-        {% for error in form.address.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-        </p>
-        <p>
-        {{ form.city_from.label }}<br>
-        {{ form.city_from(class="form-control") }}<br>
-        {% for error in form.city_from.errors %}
+        {{ form.type.label }}<br>
+        {{ form.type(class="form-control", type="list") }}<br>
+        {% for error in form.type.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>

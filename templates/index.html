@@ -1,5 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Текущие задания</h1>
+<h1>Текущие уроки</h1>
+{% for item in lessons%}
+<div class="col-md6 border rounded" style="padding:1% 2%; margin:1% 2%; background: white;">
+    <div class="row align-items-center">
+        <div class="col-2" style="cursor: pointer;" onclick="location.href='/advertisement/{{item.id}}';">
+            <img src="{{url_for('static', filename=item.file)}}" alt="В этом виноват Рома" class="w-100 h-100">
+        </div>
+        <div class="col-8">
+            <h2 style="cursor: pointer; margin-top:0px" onclick="location.href='/advertisement/{{item.id}}';">
+                {{item.title}}
+            </h2>
+            <p>{{item.content}}</p>
+            Автор - {{item.user.name}}, Дата написания - {{item.created_date.strftime("%m-%d-%Y %H:%M")}}
+            {% if current_user.is_authenticated and current_user == item.user %}
+            <div>
+                <a href="/advertisement/edit/{{ item.id }}" class="btn btn-warning">
+                    Изменить
+                </a>
+                <a href="/advertisement_delete/{{ item.id }}" class="btn btn-danger">
+                    Удалить
+                </a>
+            </div>
+            {% else %}
+            {% if current_user.is_authenticated %}
+            <div class="col-2">
+                <a href="/chat/{{ item.user.id }}" class="btn btn-success">
+                    Чат с пользователем
+                </a>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}
