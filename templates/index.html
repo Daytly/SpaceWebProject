@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white;">
-    <h1>Предложения обмена</h1>
+    <h1>Уроки</h1>
     {% for item in lessons%}
     {% if ((search['title'] in item.title.lower() or not search['title']) and
     (search['author'] == item.user.email or not search['author']))%}

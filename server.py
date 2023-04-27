@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from flask_restful import Api
 from data.lesson import Lesson
 from forms.LessonForm import LessonForm
+from forms.TaskForm import TaskForm
 from forms.user import RegisterForm, LoginForm
 from data.users import User
 from data.chats import Chat
@@ -357,8 +358,24 @@ def delete_user():
 @app.route('/tasks')
 def tasks():
     db_sess = db_session.create_session()
-    user = db_sess.query(User).get(current_user.id)
-    return render_template('task.html', user=user, url='/settings')
+    task = db_sess.query(Task).filter(Task.user == current_user).all()
+    return render_template('task.html', tasks=task, url='/tasks')
+
+
+@app.route('/tasks/create', methods=['GET', 'POST'])
+def add_task():
+    form = TaskForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        task = Task()
+        task.title = form.title.data
+        task.url = form.url.data
+        user = db_sess.query(User).get(current_user.id)
+        user.tasks.append(task)
+        db_sess.merge(user)
+        db_sess.commit()
+        return redirect('/tasks')
+    return render_template('create_task.html', url='/tasks/create', form=form)
 
 
 @app.route('/tasks/<int:task_id>/edit', methods=['GET', 'POST'])

@@ -21,6 +21,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     type = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     avatar = sqlalchemy.Column(sqlalchemy.String)
     lesson = orm.relationship("Lesson", back_populates='user')
+    tasks = orm.relationship("Task", back_populates='user')
 
     def __repr__(self):
         return f'<User> {self.id} {self.name} {self.email}'

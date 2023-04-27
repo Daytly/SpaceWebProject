@@ -3,6 +3,9 @@
 {% block content %}
 <div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white;">
     <h1>Тесты</h1>
+    <a href="/tasks/create" class="btn btn-warning">
+        Создать
+    </a>
     {% for item in tasks%}
     <div class="col-md6 border rounded" style="padding:1% 2%; margin:1% 2%; background: white;">
         <div class="row align-items-center">
@@ -10,7 +13,7 @@
                 <h2 style="cursor: pointer; margin-top:0px" onclick="location.href='/lesson/{{item.id}}';">
                     {{item.title}}
                 </h2>
-                Автор - {{item.user.name}}}}
+                Автор - {{item.user.name}} {{item.user.surname}}
                 {% if current_user.is_authenticated and current_user == item.user %}
                 <div>
                     <a href="/tasks/{{ item.id }}/edit" class="btn btn-warning">
