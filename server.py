@@ -372,7 +372,13 @@ def tasks():
         _tasks = db_sess.query(Task).filter(Task.user == current_user).all()
     else:
         _tasks = []
-        for task_id in [int(i) for i in current_user.tests.split(',')]:
+        _list = current_user.tests.split(',')
+        for i in range(len(_list)):
+          if _list[i] == "":
+            _list.pop(i)
+          else:
+            _list[i] = int(_list[i])
+        for task_id in _list:
             task = db_sess.query(Task).get(task_id)
             _tasks.append(task)
     return render_template('task.html', tasks=_tasks, url='/tasks')
