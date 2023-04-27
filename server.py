@@ -7,6 +7,7 @@ from flask_restful import Api
 from data.lesson import Lesson
 from forms.LessonForm import LessonForm
 from forms.TaskForm import TaskForm
+from forms.ValueForm import ValueForm
 from forms.user import RegisterForm, LoginForm
 from data.users import User
 from data.chats import Chat
@@ -377,7 +378,7 @@ def add_task():
             db_sess = db_session.create_session()
             task = Task()
             task.title = form.title.data
-            task.url = form.url.data
+            task.url = form.url.data.replace('/viewform?usp=sf_link', '')
             user = db_sess.query(User).get(current_user.id)
             user.tasks.append(task)
             db_sess.merge(user)
@@ -389,46 +390,83 @@ def add_task():
 
 @app.route('/tasks/<int:task_id>/edit', methods=['GET', 'POST'])
 def edit_task(task_id):
-    form = TaskForm()
-    if request.method == "GET":
-        db_sess = db_session.create_session()
-        task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
-        if task:
-            form.title.data = task.title
-            form.url.data = task.url
-        else:
-            abort(404)
-    if request.method == "POST":
-        db_sess = db_session.create_session()
-        task = db_sess.query(Task).get(task_id)
-        if task:
-            task.title = form.title.data
-            task.url = form.url.data
-            db_sess.commit()
-            return redirect('/tasks')
-        else:
-            abort(404)
-    return render_template('create_task.html',
-                           title='Редактирование теста',
-                           form=form,
-                           url='')
+    if current_user.type == 2:
+        form = TaskForm()
+        if request.method == "GET":
+            db_sess = db_session.create_session()
+            task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
+            if task:
+                form.title.data = task.title
+                form.url.data = task.url
+            else:
+                abort(404)
+        if request.method == "POST":
+            db_sess = db_session.create_session()
+            task = db_sess.query(Task).get(task_id)
+            if task:
+                task.title = form.title.data
+                task.url = form.url.data.replace('/viewform?usp=sf_link', '')
+                db_sess.commit()
+                return redirect('/tasks')
+            else:
+                abort(404)
+        return render_template('create_task.html',
+                               title='Редактирование теста',
+                               form=form,
+                               url='')
+    else:
+        return 'Доступ закрыт'
 
 
 @app.route('/tasks/<int:task_id>/delete', methods=['GET', 'POST'])
 def delete_task(task_id):
-    db_sess = db_session.create_session()
-    task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
-    db_sess.delete(task)
-    db_sess.commit()
-    return redirect('/tasks')
+    if current_user.type == 2:
+        db_sess = db_session.create_session()
+        task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
+        db_sess.delete(task)
+        db_sess.commit()
+        return redirect('/tasks')
+    else:
+        return 'Доступ закрыт'
 
 
 @app.route('/tasks/<int:task_id>/appoint', methods=['GET', 'POST'])
 def appoint_task(task_id):
-    db_sess = db_session.create_session()
-    task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
-    users = db_sess.query(User).filter(User.type == 1).all()
-    return render_template('appoint_page.html', task=task, users=users, title='Учинеки', str=str)
+    if current_user.type == 2:
+        db_sess = db_session.create_session()
+        task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
+        users = db_sess.query(User).filter(User.type == 1).all()
+        return render_template('appoint_page.html', task=task, users=users, title='Учинеки', str=str)
+    else:
+        return 'Доступ закрыт'
+
+
+@app.route('/tasks/<int:task_id>/estimate', methods=['GET', 'POST'])
+def estimate_task(task_id):
+    if current_user.type == 2:
+        db_sess = db_session.create_session()
+        task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
+        users = db_sess.query(User).filter(User.type == 1).all()
+        return render_template('estimate_page.html', task=task, users=users, title='Учинеки', str=str)
+    else:
+        return 'Доступ закрыт'
+
+
+@app.route('/tasks/<int:task_id>/estimate/<int:user_id>', methods=['GET', 'POST'])
+def estimate_task_value(task_id, user_id):
+    if current_user.type == 2:
+        form = ValueForm()
+        if request.method == 'GET':
+            return render_template('value.html', form=form)
+        elif request.method == 'POST':
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).get(user_id)
+            user.count += form.value.data
+            db_sess.merge(user)
+            db_sess.commit()
+            return redirect(f'/tasks/{task_id}/estimate')
+    else:
+        return 'Доступ закрыт'
 
 
 @app.route('/tasks/<int:task_id>/appoint/<int:user_id>', methods=['GET', 'POST'])

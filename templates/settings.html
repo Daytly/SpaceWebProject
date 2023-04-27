@@ -19,13 +19,16 @@
         <div class="col-3">
             <h2>Имя: {{user.name}}</h2>
             <h2>Фамилия: {{user.surname}}</h2>
+            {% if user.type == 1 %}
+            <h2>Рейтинг: {{user.count}}</h2>
+            {% endif%}
         </div>
         <div class="col-7">
             <h2>Почта: {{user.email}}</h2>
             {% if user.type == 1 %}
-                <h2>Должность: Ученик</h2>
+            <h2>Должность: Ученик</h2>
             {% else %}
-                <h2>Должность: Учитель</h2>
+            <h2>Должность: Учитель</h2>
             {% endif%}
         </div>
     </div>

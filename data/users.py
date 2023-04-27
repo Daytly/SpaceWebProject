@@ -21,6 +21,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     type = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     tests = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     avatar = sqlalchemy.Column(sqlalchemy.String)
+    count = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     lesson = orm.relationship("Lesson", back_populates='user')
     tasks = orm.relationship("Task", back_populates='user')
 

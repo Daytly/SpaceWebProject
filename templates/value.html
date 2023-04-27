@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white;">
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.value.label }}<br>
+            {{ form.value(class="form-control") }}<br>
+            {% for error in form.value.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+        {% endfor %}
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        <h6 style="color: red;">{{message}}</h6>
+    </form>
+</div>
+{% endblock %}

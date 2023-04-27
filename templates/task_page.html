@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white;">
-    <script src="https://yastatic.net/s3/frontend/forms/_/embed.js"></script>
-    <iframe src="{{task.url}}?iframe=1" frameborder="0"
-            name="ya-form-644a35aff47e7301658c9fd2" width="650"></iframe>
+<div class="border rounded" style="padding:1% 1%; margin:1% 2%; background: white; height: 100%;" align="center">
+    <iframe src="{{task.url}}/viewform?embedded=true"
+            width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0">Загрузка…
+    </iframe>
 </div>
 
 {% endblock %}
