@@ -428,7 +428,7 @@ def appoint_task(task_id):
     db_sess = db_session.create_session()
     task = db_sess.query(Task).filter(Task.id == task_id and Task.user == current_user).first()
     users = db_sess.query(User).filter(User.type == 1).all()
-    return render_template('appoint_page.html', task=task, users=users, title='Учинеки', str=str)
+    return render_template('appoint_page.html', task=task, users=users, title='Ученики', str=str)
 
 
 @app.route('/tasks/<int:task_id>/appoint/<int:user_id>', methods=['GET', 'POST'])
